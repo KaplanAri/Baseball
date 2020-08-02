@@ -1,0 +1,36 @@
+B <- c(2, 4, 5, 7, 12, 14, 16)
+pie(B)
+data()
+cyltable<- table(mtcars$cyl)
+Then run the pie chart again:
+  labs<- paste("(",names(cyltable),")", "\n", cyltable, sep="")
+pie(cyltable, labels = labs, col = c("red", "yellow", "blue"), + main="PIE CHART OF CYLINDER NUMBERS\n with sample sizes")
+
+pitchers_lahman <- read.csv("c:/Kaplan/pitchers.csv")
+summary(pitchers_lahman)
+attach(pitchers_lahman)
+hist(FIP)
+hist(FIP, breaks=50)
+plot(ERA, FIP)
+cor.test(ERA, FIP)
+cor.test(FIP, xFIP)
+
+lm(FIP~ERA)
+lm_line=lm(FIP~ERA)
+abline(lm_line,col="red")
+plot(lm_line)
+summary(lm_line)
+
+summary(df)
+
+df <- read.csv("c:/Kaplan/pitchers.csv")
+temp_f = temp_c *1.8 + 20
+head(df)
+
+install.packages("RMySQL")
+library(RMySQL)
+
+mydb = dbConnect(MySQL(), user='avkaplan', password='xxxx', dbname='ari_db', host='host10.hostgator.com')
+
+
+

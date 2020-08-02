@@ -1,0 +1,633 @@
+# download python (command line) or even better Anaconda Navigator (top python platform in the world)
+# https://www.anaconda.com/distribution/
+# takes 20 mins or so to install, then can also install Jupyter Notebooks, Orange.ai, R-Studio, and more
+
+# print command
+print("hello SMWW class")
+
+# concatenate
+print('SMWW '+'Data Science')
+
+# assign a variable
+name = "Albert Pujols"
+print(name)
+
+# concatenate variables into a new variable
+first = "Mike"
+last = "Trout"
+print(first, last)
+full_name = first+last
+print (full_name)
+full_name_space = first+" "+last
+print (full_name_space)
+len(full_name_space)
+
+# five main types of variables are numbers, strings, lists, tuples, dictionaries
+# seven arithmetic: + - * / % ** // (discard remainder)
+print("5 + 2 = ", 5+2)
+print("5 % 2 = ", 5 % 2)
+print("5 * * 2 = ", 5 ** 2)
+print("5 // 2 = ", 5 // 2)
+
+# go through 20 numbers and print if each is prime / not prime. This is by hard-coding a list and using "for", "if/else"
+Rangelist= range(20)
+for the_number in Rangelist:
+   if the_number in (1,2,3,5,7,11,13,17,19):
+      print(the_number,"prime")
+   else:
+      print(the_number,"not prime")
+	  
+
+#
+import random 
+from time import clock
+randomint = random.randint(1, 100) 
+print(randomint)
+
+# Note: will need to install pybaseball by going to the terminal and typing "pip install pybaseball"
+# download Statcast
+import pybaseball as pyb
+# format is: data = pyb.statcast(start_dt='startdate', end_dt='enddate')
+data = pyb.statcast(start_dt='2019-05-01', end_dt='2019-05-02')
+data.to_csv('file.csv', index=False)
+
+# review file.csv
+import csv
+with open('file.csv') as csvDataFile:
+    csvReader = csv.reader(csvDataFile)
+    for row in csvReader:
+        print(row)
+#
+# ------------ SMWW regression -------------------------------------------------
+#
+# from https://towardsdatascience.com/linear-regression-in-6-lines-of-python-5e1d0cd05b8d
+# must first run this one-time for setup: pip install scikit-learn
+import numpy as np
+import matplotlib.pyplot as plt  # To visualize
+import pandas as pd  # To read data
+from sklearn.linear_model import LinearRegression
+
+# now perform regression
+#data = pd.read_csv('NFL_data.csv')  # load data set
+print("x1")
+data = pd.read_csv('data.csv')  # load data set
+print("x2")
+X = data.iloc[:, 0].values.reshape(-1, 1)  # values converts it into a numpy array
+print("x3")
+Y = data.iloc[:, 1].values.reshape(-1, 1)  # -1 means that calculate the dimension of rows, but have 1 column
+print("x4")
+linear_regressor = LinearRegression()  # create object for the class
+print("x5")
+linear_regressor.fit(X, Y)  # perform linear regression
+print("x6")
+Y_pred = linear_regressor.predict(X)  # make predictions
+
+# visualize
+plt.scatter(X, Y)
+plt.plot(X, Y_pred, color='yellow')
+plt.show()
+#
+# From https://pypi.org/project/baseball-scraper/
+# ------------- Use baseball_scraper to get StatCast data -------------------------------------------
+#
+from baseball_scraper import statcast
+data = statcast(start_dt='2017-06-24', end_dt='2017-06-27')
+data.head(10)
+#
+# ------------- Find Clayton Kershaw's player id ----------------------------------------
+#
+# 
+from baseball_scraper import playerid_lookup
+from baseball_scraper import statcast_pitcher
+playerid_lookup('kershaw', 'clayton')
+#
+# --------------- Standings --------------------------
+from baseball_scraper import standings
+data = standings(2018)[4]
+print(data)
+#
+# -------------------------------------------------------------
+#
+# review NFL data.csv
+import csv
+with open('data.csv') as csvDataFile:
+    csvReader = csv.reader(csvDataFile)
+    for row in csvReader:
+        print(row)
+#
+# ----------------------------------------------------------------------------------------------------------------------------------
+# -------------- Data Analysis: from https://medium.com/@williamkoehrsen/data-analysis-with-python-19434f5d6324 --------------------
+# ----------------------------------------------------------------------------------------------------------------------------------
+#
+# Standard data analysis imports with quandl used for financial data
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+from matplotlib import style
+import quandl
+import seaborn as sns
+import math
+# These are the DataFrames containing the raw data as provided by Sean Lahman
+all_salaries = pd.read_csv('Salaries.csv')
+all_batting = pd.read_csv('Batting.csv')
+all_pitching = pd.read_csv('Pitching.csv')
+#
+# ----------------- Set up pylab to run in the Jupyter Notebook --------------------------------------------------------------------
+#
+# I first needed to get a feel for the data I was going to be analyzing. I took a look through the raw data and made a few preliminary observations,
+# such as the lack of data for the earliest years in the sets. This informed my decision to concentrate on salaries from 2008, and statistics from
+# the period 2006–2010. Out of curiousity, I decided to graph the average salary of all Major League Baseball (MLB) players as a percentage change over
+# time (from 1985) and then compared that to the median household income percentage change in the United States using data from Quandl.
+
+%pylab inline
+# Group the salaries by mean 
+yearly_average_salary = all_salaries.groupby('yearID').mean()
+# Calculate and plot the percentage change from the first entry
+yearly_salary_pct_change = 100.0 *  (yearly_average_salary - yearly_average_salary.iloc[0]) / yearly_average_salary.iloc[0]
+yearly_salary_pct_change.plot()
+plt.title('Average MLB Player Salary')
+plt.ylabel('PCT Change'); plt.xlabel('')
+
+# -----------
+# Retrieve data from Quandl with the start date that corresponds to the MLB salary start date
+median_household_income = quandl.get('FRED/MEHOINUSA646N', start_date = '1985-01-01')
+# Calculate and plot the percentage change of median household income from the first entry
+median_household_pct_change = 100.0 * (median_household_income - median_household_income.iloc[0]) / median_household_income.iloc[0]
+median_household_pct_change.plot(color = 'c')
+plt.title('Median US Household Income')
+plt.ylabel('PCT Change'), plt.xlabel('');
+
+# -----------
+# While both the median United States household income and MLB player salary have increased over time, MLB salaries have far outpaced the growth of all
+# US salaries. MLB salaries have grown by about 800% in only 40 years! That is an annual inflation rate of 5.3% compared to only 0.84% for the general
+# public. Clearly, MLB players must be working wonders to deserve such lucrative contracts.
+
+# I am only concerned with salaries in the year 2008. I don't need to know the teams or the league of the player.
+salaries_2008 = all_salaries[all_salaries['yearID']==2008]
+salaries_2008 = salaries_2008.drop(['yearID', 'teamID', 'lgID'], axis=1)
+
+# As I was concerned with 2008 salaries, I thought it would be helpful to get a sense of the scale of what players were paid in that season. A histogram
+# was the best way to demonstrate that the majority of players are clustered around the same pay, with a positively skewed distribution demonstrating several
+# significant outliers. Make sure to note that the x-axis is in millions of US dollars.
+
+# Create a histogram salaries from 2008.
+plt.hist((salaries_2008['salary']/1e6), bins=6, color='g', edgecolor='black', linewidth=1.2, align='mid');
+plt.xlabel('Salary (millions of $)'), plt.ylabel('Count')
+plt.title('MLB 2008 Salary Distribution', size = 14);
+
+# -----------
+# Modify the all_batting DataFrame to contain only the statistics I want to examine:
+# For batting these are: Runs Batted In (RBI), Hits (H), Home Runs (HR)
+# Moreover, I only want to examine the 5 year period around the salary year [2006-2010]
+years_to_examine = [2006, 2007, 2008, 2009, 2010]
+batting = all_batting[['playerID', 'yearID', 'RBI', 'H', 'HR', 'G']]
+batting = batting[batting['yearID'].isin(years_to_examine)]
+# For pitching, the relevant statistics are: Earned Run Average (ERA), Wins (W), and Stikeouts (SO)
+pitching = all_pitching[['playerID', 'yearID', 'ERA', 'W', 'SO', 'IPouts']]
+pitching = pitching[pitching['yearID'].isin(years_to_examine)]
+# Examine the data so far.
+batting.tail(15)
+
+# -----------
+# I see that the indexes of the DataFrames are the row numbers from the csv file. That does not really bother me at this point because I am not using the index values for any analysis
+# In my initial examination of the raw data, I observed that some player IDs had multiple entires in the same year. Looking at the source data more closely, I saw that was because these players had multiple stints recorded in the same season. That is, they started the season with one team, were traded to another team, and had played a full season across two or more different teams. I wanted to include these players in my analysis, so I grouped the data by player and year, and summed up the statistics for players who had multiple entries in the same year to compress their statistics into a single figure for the season. This did not affect my analysis as I was not concerned with the teams players were on when they compiled their figures.
+batting = batting.groupby(['playerID', 'yearID'], as_index=False).sum()
+pitching = pitching.groupby(['playerID', 'yearID'], as_index=False).sum()
+
+# It looks like I have a decent start, but there are still several issues with the data. One is that I only want to analyze players who were able to play a full season in each of the years under consideration. This was in order to exclude players who may have been injured but still received a salary and would thus affect the average of the performance metrics (a player with 0 hits but a $10 million salary would have quite the effect on the data!). After doing some research on http://www.fangraphs.com/, I decided that a decent metric to quantify a full season would be 100 games per season for the batters and 120 innings pitched per season for the pitchers. I decided to limit the analysis to starting pitchers and not relievers or closers and this bar for pitchers would take care of that issue as well.
+# Removing any records with fewer than 100 games for batters and 120 innings pitched for pitchers.
+batting = batting[batting['G'] > 100]
+batting.tail(15)
+
+# -----------
+pitching = pitching[(pitching['IPouts'] / 3) > 120]
+pitching.tail(15)
+
+# -----------
+# Another primary issue with the data was that at this point it contained players who had even a single record for any of the five years [2006–2010]. I only wanted players who had records in every year in the range in order to track the same players across multiple seasons. I decided to write a function that could take in the batting and pitching DataFrames, and return DataFrames with only players who played in all five years.
+'''
+The batting and pitching DataFrames currently contain all players with even a single year in the five-year range.
+I need to remove the players who do not have records across all five seasons. In order to do so, I wrote a function that 
+takes in a DataFrame, and returns the DataFrame modified to only contain players with five entries. At this point, there
+are no players who have multiple entries for the same year, so checking the number of times a given playerID occurs in the 
+playerID column is the quickest way to create the DataFrame I want. 
+'''
+def find_players_with_all_years(records):
+    
+    # First create a list with all of the playerIDs (many will be repeated) in the playerID column of the DataFrame
+    list_of_IDs = list(records['playerID'])
+    players_with_five_years = set()
+    
+    # Iterate through the list of IDs and count how many times a given ID occurs in the list
+    # This will correspond to the number of entries that player has in the records_df
+    for player in list_of_IDs:
+        if (list_of_IDs.count(player)) == len(years_to_examine):
+            players_with_five_years.add(player)
+    
+    # Return a modified DataFrame that only includes players with records in every year in the range of years to examine
+    return records[records['playerID'].isin(players_with_five_years)]
+# Create the new DataFrames including only players with records in years in the analysis
+batting = find_players_with_all_years(batting)
+batting
+
+# -----------
+pitching = find_players_with_all_years(pitching)
+pitching
+
+# -----------
+# At this point I want to be sure that my DataFrames contain exactly what I want. The next few cells are checks to examine the DataFrames and make sure that the code has modified the data as intended.
+player_counts = []
+for playerID in batting['playerID']:
+    player_counts.append(list(batting['playerID']).count(playerID))
+    
+print('The average number of times a playerID appears in the batting DF is {:0.4f}'.format(np.mean(player_counts)))
+
+player_counts = []
+for playerID in batting['playerID']:
+    player_counts.append(list(batting['playerID']).count(playerID))
+    
+print('The average number of times a playerID appears in the pitching DF is {:0.4f}'.format(np.mean(player_counts)))
+
+
+# -----------
+# Given that the mean number of appearances of each player ID in the pitching and batting DataFrames was 5.0, I am confident my DataFrames correctly represent the data. They include only players with records in all years as well as only the players who meet the games played or innings pitched cut-offs for batters and pitchers respectively.
+# I now want to include the salaries in the DataFrame. This will put in the same 2008 salary for all five years, which is fine at this point as the averaging will simply return the 2008 salary.
+
+# Merge the salary and performance statistics DataFrames. This will add a column with the salary to the DataFrames. 
+batting = batting.merge(salaries_2008, on='playerID')
+batting = batting.rename(columns = {'H': 'Hits', 'HR': 'Home Runs', 'G': 'Games', 'salary' : 'Salary'})
+pitching = pitching.merge(salaries_2008, on='playerID')
+pitching = pitching.rename(columns = {'W':'Wins', 'SO':'Strikeouts', 'salary': 'Salary'})
+pitching
+
+# -------------
+# I now want to create three separate DataFrames in order to make comparisons between performance and salary over time:
+#    An average of statistics over the entire five seasons [2006–2010]
+#    An average of statistics over the two seasons before the salary year [2006–2007]
+#    An average of statistics over the two seasons after the salary year [2009–2010]
+previous_years = [2006, 2007]
+following_years = [2009, 2010]
+# This function takes in the DataFrames with records for all five years and creates three separate DataFrames
+def create_seasons_averages(records):
+    
+    # I found that the easiest way to create the DataFrames was to group by playerID and average the statistics over the years
+    five_year_average = records.groupby('playerID', as_index=False).mean()
+    
+    previous_two_years = records[records['yearID'].isin(previous_years)]
+    previous_two_years_average = previous_two_years.groupby('playerID', as_index=False).mean()
+    
+    following_two_years = records[records['yearID'].isin(following_years)]
+    following_two_years_average = following_two_years.groupby('playerID', as_index=False).mean()
+    
+    # The three DataFrames returned are as specified above. 
+    return five_year_average , previous_two_years_average, following_two_years_average
+# Create the average batting and pitching DataFrames
+batting_five_year, batting_previous, batting_following  = create_seasons_averages(batting)
+pitching_five_year, pitching_previous, pitching_following = create_seasons_averages(pitching)
+
+# The next cell provides me with the number of batters and pitchers I am dealing with who meet the criteria I specified.
+print('There are {} batters in the wrangled batting datasets.'.format(len(batting_previous)))
+print('There are {} pitchers in the wrangled pitching datasets.'.format(len(pitching_previous)))
+
+# -------------------
+# As a final step, I can drop the yearID from all the DataFrames. I want to keep the playerID because I will use it to compare player’s statistics across seasons.
+df_list = [ batting_five_year, batting_previous, batting_following, \
+            pitching_five_year, pitching_previous, pitching_following]
+# This function takes in a list of DataFrames and drops the yearID column from all of them
+def drop_year_and_player_ID(df_list):
+    for df in df_list:
+        df.is_copy = False
+        df.drop(['yearID'] , axis=1, inplace=True)
+drop_year_and_player_ID(df_list)
+
+# I want to look at a couple of my DataFrames at this point to make sure they are correct.
+batting_following
+
+# --------------------
+pitching_previous
+
+# --------------------
+# I finally have the data wrangled in the format I want! It’s time to start the analysis. The driving motivation behind the analysis will be the four questions I posed in the introduction. As a quick reminder, I will be looking at which statistics correlatate most highly with salary for both batters and pitchers, and then I will look at how these correlations change over time. I will look at how the performance metrics and salary correlations differ between the entire five-year range, the two seasons preceding the salary year, and the two seasons following the salary year.
+# Performance Metric and Salary Analysis
+# The batters will lead-off the analysis (pun totally intended) and I will look at which stats from the entire five-year average are most highly correlated with the salary in 2008.
+# Batting Analysis
+'''
+This function takes in a DataFrame and a list of statistics and plots the relationship 
+between each statistic and the salary in a scatter plot. It also draws in the best fit line
+for the data using numpy\'s polyfit method. Finally, it prints the Pearson's correlation correlation
+coefficient between each statistic and the salary. The graph formatting and the print output are 
+specific to the five-year records.
+'''
+def analyze_five_year_records(record_df, statistics_list):
+    for statistic in statistics_list:
+        x = record_df[statistic]
+        y = record_df['Salary'] / 1e6 
+        plt.figure()
+        plt.scatter(x,y)
+        plt.title('Five-Year Average {} vs Salary'.format(statistic))
+        plt.ylabel('Salary (millions of $)')
+        plt.xlabel('{}'.format(statistic))
+        z = numpy.polyfit(x, y, 1)
+        p = numpy.poly1d(z)
+        plt.plot(x, p(x), 'r--')
+        print('The correlation between average {} over the five years and salary is {:0.3f}' \
+         .format(statistic, record_df.corr()[statistic]['Salary']))
+analyze_five_year_records(batting_five_year, ['RBI', 'Hits', 'Home Runs'])
+
+# ----------------------
+# The correlation number returned is the Pearson correlation coefficient, a measure of how linearly dependent two variables are to one another. The coefficient value is between -1 and +1, and two variables that are perfectly correlated with have a value of +1. It is premature to draw absolute conclusions using only the correlation coefficient as what constitutes a strong vs weak correlation depends heavily on the field of study, the instruments used to record the measurements, and the variables themselves. However, I am using the correlation coefficient in relative terms in this analysis to determine whether one correlation is stronger than another. Based on this measure, for the entire five-year interval, runs batted in (RBI) has the highest correlation with salary followed by home runs and then hits. That is counter to my initial hypothesis that home runs would have the strongest correlation with salary. All three of the performance metrics were positively correlated with salary, indicating that players who perform better over the long term do in fact tend to be more highly compensated.
+# The next step for this analysis was to determine whether these correlations would be stronger for the preceding seasons or for the following seasons.
+# This function does the same job as the five-year analyze function but the output is tailored to the previous seasons. 
+def analyze_previous_records(record_df, statistics_list):
+    for statistic in statistics_list:
+        x = record_df[statistic]
+        y = record_df['Salary'] / 1e6
+        plt.figure()
+        plt.scatter(x,y)
+        plt.title('Previous Two Seasons Average {} vs Salary'.format(statistic))
+        plt.ylabel('Salary (millions of $)')
+        plt.xlabel('{}'.format(statistic))
+        z = numpy.polyfit(x, y, 1)
+        p = numpy.poly1d(z)
+        plt.plot(x, p(x), 'r--')
+        print('The correlation between average {} over the previous two years and salary is {:0.3f}' \
+         .format(statistic, record_df.corr()['Salary'][statistic]))
+analyze_previous_records(batting_previous, ['RBI', 'Hits', 'Home Runs'])
+
+################
+################
+################
+################ CONTINUE EXERCISES HERE: http://localhost:8888/notebooks/SMWW%20python%20examples.ipynb#
+################
+################
+################
+
+
+
+
+
+#
+# -------------- Get pitching stats ----------------------------------------------------
+#
+from baseball_scraper import pitching_stats
+data = pitching_stats(2012, 2016)
+data.head()
+#
+# -------------- Get batting stats ----------------------------------------------------
+#
+from baseball_scraper import batting_stats_range
+data = batting_stats_range('2017-05-01', '2017-05-08')
+data.head()
+#
+# -------------------------------------------------------------
+#
+		
+# NFL regression
+# from https://towardsdatascience.com/linear-regression-in-6-lines-of-python-5e1d0cd05b8d
+# must first run this one-time for setup: pip install scikit-learn
+import numpy as npa
+import matplotlib.pyplot as plt  # To visualize
+import pandas as pd  # To read data
+from sklearn.linear_model import LinearRegression
+
+# now perform regression
+#data = pd.read_csv('lr_data.csv')  # load data set
+print("step 1 - read data.csv")
+data = pd.read_csv('data.csv')  # load data set
+print("step 2 - convert into array")
+X = data.iloc[:, 0].values.reshape(-1, 1)  # values converts it into a numpy array
+print("step 3 - calculate dimension of rows")
+Y = data.iloc[:, 1].values.reshape(-1, 1)  # -1 means that calculate the dimension of rows, but have 1 column
+print("step 4 - setup object for regression")
+linear_regressor = LinearRegression()  # create object for the class
+print("step 5 - run the actual linear regression against data.csv!!!!")
+linear_regressor.fit(X, Y)  # perform linear regression
+print("step 6 - make predictions")
+Y_pred = linear_regressor.predict(X)  # make predictions
+print("step 7 - make graph with scatter and plot commands")
+# visualize
+plt.scatter(X, Y)
+plt.plot(X, Y_pred, color='red')
+plt.xlabel('Actual values')
+plt.ylabel('Predicted values')
+plt.show()
+
+# show class the variery of matplotlib graphs: https://matplotlib.org/api/_as_gen/matplotlib.pyplot.show.html
+________________________________________________________________________________________________________________________________________________
+
+
+# baseball code
+import pandas as pd
+BS_2018 = pd.read_csv('./mlb-player-stats-Batters.csv')
+Pred_BS = pd.read_csv('./Predicted_Batting.csv')
+
+BS_2018.head()
+
+Pred_BS.head()
+
+All_List = []
+
+#Again build up a list of Predicted Batters actual 2018 results
+Filter_Pred_Batter = Pred_BS[(Pred_BS.yearID == 2018)]
+for row in Filter_Pred_Batter.itertuples():
+    E_List = []
+    pid = row.playerID
+    
+    result = Players[(Players.playerID == pid)][['nameFirst', 'nameLast']]
+    name = result.iloc[0,0] + " " + result.iloc[0,1]
+    
+    Entry = BS_2018[BS_2018.Player == name][['HR','AVG','RBI','OBP','SLG','SO']]
+    
+    #If the Batters has more than 1 Entry they played for 2 teams in a year. There values are set to 0. 
+    #In hindsight I could have calculated the values here as opposed to solving them in the Spreadsheet
+    if len(Entry) >1:
+        E_List.append(pid)
+        E_List.append(name)
+        print("Multiple Payer Issue for Player :",name)
+        print(Entry)
+        E_List.append(0)
+        E_List.append(0)
+        E_List.append(0)
+        E_List.append(0)
+        E_List.append(0)
+        E_List.append(0)
+        print(E_List)
+        All_List.append(E_List)
+    else:
+        #If Empty the player did not play in 2018 - eg. Mike Napoli
+        if Entry.empty:
+            print("Issue for Player :",name)
+        else:
+            #Create the list-entry with the right values an append
+            E_List.append(pid)
+            E_List.append(name)
+            E_List.append(Entry.iloc[0,0])
+            E_List.append(Entry.iloc[0,1])
+            E_List.append(Entry.iloc[0,2])
+            E_List.append(Entry.iloc[0,3])
+            E_List.append(Entry.iloc[0,4])
+            E_List.append(Entry.iloc[0,5])
+            All_List.append(E_List)
+
+#Convert the list to a DF
+df_RW = pd.DataFrame(All_List, columns = ['playerID' , 'Name', 'HR' , 'AVG', 'RBI','OBP','SLG','SO'])
+df_RW.head()
+
+#Write the DF out to file
+df_RW.to_csv('Ari_Derives/2018_B_Actuals.csv', encoding='utf-8', index=False)
+#DF is Read back in after the duplicat Player entries were manually fixed
+BA_2018 = pd.read_csv('Ari_Derives/2018_B_Actuals.csv')
+BA_2018.head()
+
+#Add in the ABs as this is needed for the filter
+TempDF = BS_2018
+TempDF = TempDF.rename(columns={'Player': 'Name'})
+mergedCSV = BA_2018[['playerID','Name','HR','AVG','RBI','OBP','SLG','SO']].merge(TempDF[['Name','AB']], on = 'Name',how = 'left')
+mergedCSV.head()
+#Save to File
+mergedCSV.to_csv('Ari_Derives/2018_B_ActualsWithABs.csv', encoding='utf-8', index=False)
+#Read-Back in
+BA_AB_2018 = pd.read_csv('Ari_Derives/2018_B_ActualsWithABs.csv')
+BA_AB_2018.head()
+
+
+#Only get the Predictions for 2018
+Filter_Pred_Batter = Pred_BS[(Pred_BS.yearID == 2018)]
+#Merge with the 2018 actuals
+Merge_B_Result = pd.merge(Filter_Pred_Batter, BA_AB_2018, on='playerID')
+Merge_B_Result.head()
+
+
+#Add in new Difference Columns and set to Zero
+Merge_B_Result = Merge_B_Result.assign(Ari_HR_Diff=0.0,Lahman_HR_Diff=0.0,Ari_BA_Diff=0.0,Lahman_BA_Diff=0.0,Ari_RBI_Diff=0.0,Lahman_RBI_Diff=0.0,Ari_OBP_Diff=0.0,Lahman_OBP_Diff=0.0,Ari_SLG_Diff=0.0,Lahman_SLG_Diff=0.0,Ari_SO_Diff=0.0,Lahman_SO_Diff=0.0)
+Merge_B_Result.head()
+
+
+#Calculate the difference for each of the predictions against 2018 actuals
+for row in Merge_B_Result.itertuples():
+    ariHR_Diff = row.pred_aridb_HR - row.HR
+    lHR_Diff = row.pred_lahman_HR - row.HR
+    ariBA_Diff = row.pred_aridb_BA - row.AVG
+    lBA_Diff = row.pred_lahman_BA - row.AVG
+    ariRBI_Diff = row.pred_aridb_RBI - row.RBI
+    lRBI_Diff = row.pred_lahman_RBI - row.RBI
+    ariOBP_Diff = row.pred_aridb_OBP - row.OBP
+    lOBP_Diff = row.pred_lahman_OBP - row.OBP
+    ariSLG_Diff = row.pred_aridb_SLG - row.SLG
+    lSLG_Diff = row.pred_lahman_SLG - row.SLG
+    ariSO_Diff = row.pred_aridb_SO - row.SO
+    lSO_Diff = row.pred_lahman_SO - row.SO
+    
+    #HR
+    Merge_B_Result.iat[row.Index,Merge_B_Result.columns.get_loc("Ari_HR_Diff")] = ariHR_Diff
+    Merge_B_Result.iat[row.Index,Merge_B_Result.columns.get_loc("Lahman_HR_Diff")] = lHR_Diff
+    #BA
+    Merge_B_Result.iat[row.Index,Merge_B_Result.columns.get_loc("Ari_BA_Diff")] = ariBA_Diff
+    Merge_B_Result.iat[row.Index,Merge_B_Result.columns.get_loc("Lahman_BA_Diff")] = lBA_Diff
+    #RBI
+    Merge_B_Result.iat[row.Index,Merge_B_Result.columns.get_loc("Ari_RBI_Diff")] = ariRBI_Diff
+    Merge_B_Result.iat[row.Index,Merge_B_Result.columns.get_loc("Lahman_RBI_Diff")] = lRBI_Diff
+    #OBP
+    Merge_B_Result.iat[row.Index,Merge_B_Result.columns.get_loc("Ari_OBP_Diff")] = ariOBP_Diff
+    Merge_B_Result.iat[row.Index,Merge_B_Result.columns.get_loc("Lahman_OBP_Diff")] = lOBP_Diff
+    #SLG
+    Merge_B_Result.iat[row.Index,Merge_B_Result.columns.get_loc("Ari_SLG_Diff")] = ariSLG_Diff
+    Merge_B_Result.iat[row.Index,Merge_B_Result.columns.get_loc("Lahman_SLG_Diff")] = lSLG_Diff
+    #SO
+    Merge_B_Result.iat[row.Index,Merge_B_Result.columns.get_loc("Ari_SO_Diff")] = ariSO_Diff
+    Merge_B_Result.iat[row.Index,Merge_B_Result.columns.get_loc("Lahman_SO_Diff")] = lSO_Diff
+    
+Merge_B_Result.head()
+
+#Write it out to file
+Merge_B_Result.to_csv('Ari_Derives/2018_B_Diffs.csv', encoding='utf-8', index=False)
+
+#Read it back in! This is a non-sensical step but I did it as I ran the notebook from different starting points
+#during the lead up to Think and didn't have the time to make it prettier!
+Merge_B_Result = pd.read_csv('Ari_Derives/2018_B_Diffs.csv')
+
+
+#Apply the Filter Joe Applied in his R-Code
+print("Number before Filter",len(Merge_B_Result))
+Filter_B_Diff = Merge_B_Result[(Merge_B_Result.AB >= 100)]
+print("Number After Filter",len(Filter_B_Diff))
+
+
+#run SQL against the DF to see who the absolute closest and far off predictions were for StrikeOuts
+import pandasql as ps
+
+query = "SELECT NAME,Max(Abs(Lahman_SO_Diff)) AS max_abs_value FROM Filter_B_Diff"
+
+print(ps.sqldf(query, locals()))
+
+query = "SELECT NAME,Min(Abs(Lahman_SO_Diff)) AS min_abs_value FROM Filter_B_Diff"
+
+print(ps.sqldf(query, locals()))
+
+#Select Just the SO Diff Cols 
+avga_df = Filter_B_Diff['Ari_SO_Diff'].abs()
+avgl_df = Filter_B_Diff['Lahman_SO_Diff'].abs()
+
+
+#Get the overal metrics of the differences
+print ("Aridb\n",avga_df.describe())
+print ("Lahman\n", avgl_df.describe())
+
+
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+PS_2018 = pd.read_csv('Ari_Derives/2018_B_Diffs.csv')
+PS_2018.head()
+
+
+#Plot the BA Difference
+Filter_B_Diff = PS_2018[(PS_2018.AB >= 100)]
+PlotDF2 = Filter_B_Diff[['pred_aridb_BA', 'AVG', 'pred_lahman_BA']]
+
+sns.set(style="ticks")
+
+# Method 1: on the same Axis
+sns.distplot( PlotDF2["AVG"] , color="skyblue", label="AVG Actual", hist=False,kde_kws={"shade": True})
+sns.distplot( PlotDF2["pred_aridb_BA"] , color="red", label="Ari Pred", hist=False)
+sns.distplot( PlotDF2["pred_lahman_BA"] , color="green", label="Lahman Pred", hist=False)
+
+plt.xlabel("Batting Average")
+plt.title("Machine Learning Model Performance 2018") # You can comment this line out if you don't need title
+plt.show(sns)
+
+Pitch_2018withDiff = pd.read_csv('Ari_Derives/2018_P_Diff.csv')
+Pitch_2018withDiff.head()
+
+#Do a Bar Chart of the Clayton Kershaw 2018 against model predictions
+playerDF = Pitch_2018withDiff = Pitch_2018withDiff[(Pitch_2018withDiff.Name == "Clayton Kershaw")]
+playerDF.head()
+
+
+ax = playerDF.plot(x='Name', y = ['pred_aridb_ERA','ERA','pred_lahman_ERA'], kind = "bar", title ="Machine Learning Model Performance 2018")
+ax.set_xlabel("Player", fontsize=12)
+ax.set_ylabel("ERA", fontsize=12)
+plt.show()
+
+# Combines our Derive Spreadsheets into a single Excel. First, sort the columns in the
+# individual spreadsheets to be consistent - I did this in excel as it was easy enough.
+# Then the code gets it into a single excel and assign a year. 
+import pandas as pd
+import random
+#Load the Baseball Data
+BD2014 = pd.read_csv('Ari_Derives/2014BatterDerives.csv')
+BD2015 = pd.read_csv('Ari_Derives/2015BatterDerives.csv')
+BD2016 = pd.read_csv('Ari_Derives/2016BatterDerives.csv')
+BD2017 = pd.read_csv('Ari_Derives/2017BatterDerives.csv')
+#Assign year
+BD2014 = BD2014.assign(yearID=2014)
+BD2015 = BD2015.assign(yearID=2015)
+BD2016 = BD2016.assign(yearID=2016)
+BD2017 = BD2017.assign(yearID=2017)
+#Combine the derives into a single table/DF
+frames = [BD2014, BD2015, BD2016, BD2017]
+BD = pd.concat(frames)
+#Write DF output to CSV
+BD.to_csv("Ari_Derives/BatterDerives.csv",index=False)
