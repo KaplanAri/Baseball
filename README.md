@@ -1,1 +1,1 @@
-# Baseball
+# SMWW Baseball Analytics Course
